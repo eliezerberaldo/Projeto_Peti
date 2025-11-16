@@ -21,7 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['cadastrar_atividade'])) {
         $descricao = trim($_POST['descricao_atividade']);
         $projeto_id = $_POST['projeto_id'];
-        if (!empty($descricao)) {
+
+        $stmtVerifica = $db->prepare("SELECT status FROM projetos WHERE id = ?");
+        $stmtVerifica->execute([$projeto_id]);
+        $status_projeto = $stmtVerifica->fetchColumn();
+
+        if ($status_projeto !== 'Concluído' && $status_projeto !== 'Cancelado' && !empty($descricao)) {
             $stmt = $db->prepare("INSERT INTO atividades (descricao, status, projeto_id) VALUES (?, ?, ?)");
             $stmt->execute([$descricao, 'Em Andamento', $projeto_id]);
         }
@@ -50,18 +55,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$stmtProjetos = $db->query("SELECT * FROM projetos ORDER BY id DESC");
-$projetos = $stmtProjetos->fetchAll(PDO::FETCH_ASSOC);
+$projetos_ativos = [];
+$projetos_arquivados = [];
 
-$projetosComAtividades = [];
-foreach ($projetos as $projeto) {
+function getAtividades($db, $projeto_id) {
     $stmtAtividades = $db->prepare("SELECT * FROM atividades WHERE projeto_id = ? ORDER BY id ASC");
-    $stmtAtividades->execute([$projeto['id']]);
-    $atividades = $stmtAtividades->fetchAll(PDO::FETCH_ASSOC);
-    
-    $projeto['atividades'] = $atividades;
-    $projetosComAtividades[] = $projeto;
+    $stmtAtividades->execute([$projeto_id]);
+    return $stmtAtividades->fetchAll(PDO::FETCH_ASSOC);
 }
+
+$stmtAtivos = $db->query("SELECT * FROM projetos WHERE status IN ('Planejado', 'Em Andamento') ORDER BY id DESC");
+foreach ($stmtAtivos->fetchAll(PDO::FETCH_ASSOC) as $projeto) {
+    $projeto['atividades'] = getAtividades($db, $projeto['id']);
+    $projetos_ativos[] = $projeto;
+}
+
+$stmtArquivados = $db->query("SELECT * FROM projetos WHERE status IN ('Concluído', 'Cancelado') ORDER BY id DESC");
+foreach ($stmtArquivados->fetchAll(PDO::FETCH_ASSOC) as $projeto) {
+    $projeto['atividades'] = getAtividades($db, $projeto['id']);
+    $projetos_arquivados[] = $projeto;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -95,21 +109,18 @@ foreach ($projetos as $projeto) {
         </section>
 
         <section class="container-projetos">
-            <h2>Projetos em Andamento</h2>
-            <div id="painel-projetos">
+            <h2>Projetos Ativos</h2>
+            <div id="painel-projetos-ativos">
                 
-                <?php if (empty($projetosComAtividades)): ?>
-                    <p>Nenhum projeto cadastrado ainda.</p>
+                <?php if (empty($projetos_ativos)): ?>
+                    <p>Nenhum projeto ativo no momento.</p>
                 <?php endif; ?>
 
-                <?php foreach ($projetosComAtividades as $projeto): ?>
-                    
+                <?php foreach ($projetos_ativos as $projeto): ?>
                     <div class="projeto-card">
                         <div class="projeto-header">
                             <h3><?= htmlspecialchars($projeto['nome']) ?></h3>
-                            
-                            <form action="index.php" method="POST" 
-                                  onsubmit="return confirm('Tem certeza que deseja excluir este PROJETO e TODAS as suas atividades?');">
+                            <form action="index.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este PROJETO?');">
                                 <input type="hidden" name="projeto_id" value="<?= $projeto['id'] ?>">
                                 <button type="submit" name="excluir_projeto" value="1" class="btn-excluir btn-excluir-projeto" title="Excluir Projeto">X</button>
                             </form>
@@ -131,7 +142,6 @@ foreach ($projetos as $projeto) {
                         </form>
                         
                         <hr>
-
                         <h4>Atividades:</h4>
                         
                         <?php if (empty($projeto['atividades'])): ?>
@@ -144,7 +154,6 @@ foreach ($projetos as $projeto) {
                                             <?= htmlspecialchars($atividade['descricao']) ?>
                                             (<i><?= $atividade['status'] ?></i>)
                                         </span>
-                                        
                                         <div class="controles-atividade">
                                             <form action="index.php" method="POST" class="form-status-atividade">
                                                 <input type="hidden" name="atividade_id" value="<?= $atividade['id'] ?>">
@@ -155,7 +164,6 @@ foreach ($projetos as $projeto) {
                                                 </select>
                                                 <button type="submit" name="mudar_status_atividade" value="1">Mudar</button>
                                             </form>
-                                            
                                             <form action="index.php" method="POST" onsubmit="return confirm('Excluir esta atividade?');">
                                                 <input type="hidden" name="atividade_id" value="<?= $atividade['id'] ?>">
                                                 <button type="submit" name="excluir_atividade" value="1" class="btn-excluir" title="Excluir Atividade">X</button>
@@ -174,7 +182,51 @@ foreach ($projetos as $projeto) {
 
                     </div>
                 <?php endforeach; ?>
+            </div>
+        </section>
 
+        <section class="container-projetos container-arquivados">
+            <h2>Projetos Arquivados (Concluídos / Cancelados)</h2>
+            <div id="painel-projetos-arquivados">
+                
+                <?php if (empty($projetos_arquivados)): ?>
+                    <p>Nenhum projeto arquivado.</p>
+                <?php endif; ?>
+
+                <?php foreach ($projetos_arquivados as $projeto): ?>
+                    <div class="projeto-card card-arquivado">
+                        <div class="projeto-header">
+                            <h3><?= htmlspecialchars($projeto['nome']) ?></h3>
+                            <form action="index.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir este PROJETO?');">
+                                <input type="hidden" name="projeto_id" value="<?= $projeto['id'] ?>">
+                                <button type="submit" name="excluir_projeto" value="1" class="btn-excluir btn-excluir-projeto" title="Excluir Projeto">X</button>
+                            </form>
+                        </div>
+                        
+                        <span class="status" data-status="<?= $projeto['status'] ?>">
+                            <?= $projeto['status'] ?>
+                        </span>
+                        
+                        <hr>
+                        <h4>Atividades:</h4>
+                        
+                        <?php if (empty($projeto['atividades'])): ?>
+                            <p>Nenhuma atividade cadastrada.</p>
+                        <?php else: ?>
+                            <ul class="lista-atividades-arquivadas">
+                                <?php foreach ($projeto['atividades'] as $atividade): ?>
+                                    <li>
+                                        <span class="descricao-atividade">
+                                            <?= htmlspecialchars($atividade['descricao']) ?>
+                                            (<i><?= $atividade['status'] ?></i>)
+                                        </span>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+
+                    </div>
+                <?php endforeach; ?>
             </div>
         </section>
     </main>

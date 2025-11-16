@@ -1,11 +1,11 @@
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
                  "Helvetica Neue", Arial, sans-serif;
-    background-color: #f7f9fa; 
+    background-color: #f7f9fa;
     color: #333;
     margin: 0;
     padding: 0;
-    line-height: 1.6; 
+    line-height: 1.6;
 }
 
 main {
@@ -15,45 +15,36 @@ main {
 }
 
 header {
-    background-color: #005a9c; 
+    background-color: #005a9c;
     color: white;
     padding: 25px 30px;
     text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
-
-header h1 {
-    margin: 0;
-    font-size: 2.2em;
-}
-
-header p {
-    margin: 5px 0 0;
-    font-size: 1.1em;
-    opacity: 0.9;
-}
+header h1 { margin: 0; font-size: 2.2em; }
+header p { margin: 5px 0 0; font-size: 1.1em; opacity: 0.9; }
 
 .container-cadastro {
     background-color: white;
     padding: 25px;
-    border-radius: 12px; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); 
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
     margin-bottom: 35px;
     border: 1px solid #e9ecef;
 }
+.container-cadastro h2 { margin-top: 0; margin-bottom: 20px; color: #005a9c; }
+.container-cadastro form { display: flex; gap: 15px; }
 
-.container-cadastro h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #005a9c;
+.container-projetos {
+    margin-bottom: 40px; 
+}
+.container-projetos h2 {
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 15px;
+    color: #333;
 }
 
-.container-cadastro form {
-    display: flex;
-    gap: 15px;
-}
-
-#painel-projetos {
+#painel-projetos-ativos, #painel-projetos-arquivados {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: 30px;
@@ -67,12 +58,11 @@ header p {
     padding: 25px;
     display: flex;
     flex-direction: column;
-    transition: all 0.2s ease-in-out; 
+    transition: all 0.2s ease-in-out;
 }
-
 .projeto-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); 
-    transform: translateY(-4px); 
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
 }
 
 .projeto-header {
@@ -82,79 +72,48 @@ header p {
     gap: 10px;
     margin-bottom: 15px;
 }
-
-.projeto-card h3 {
-    margin: 0;
-    color: #005a9c;
-    font-size: 1.5em;
-    word-break: break-word;
-    flex-grow: 1;
-}
-
-.projeto-card h4 {
-    color: #333;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.projeto-card hr {
-    border: none;
-    border-top: 1px solid #eee;
-    margin: 20px 0;
-}
+.projeto-card h3 { margin: 0; color: #005a9c; font-size: 1.5em; word-break: break-word; flex-grow: 1; }
+.projeto-card h4 { color: #333; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.projeto-card hr { border: none; border-top: 1px solid #eee; margin: 20px 0; }
 
 .projeto-card .status {
-    font-weight: 600; 
+    font-weight: 600;
     padding: 5px 12px;
-    border-radius: 20px; 
+    border-radius: 20px;
     font-size: 0.85em;
     display: inline-block;
     align-self: flex-start;
 }
-
 .status[data-status="Planejado"] { background-color: #e0e0e0; color: #333; }
 .status[data-status="Em Andamento"] { background-color: #e6f7ff; color: #0056b3; border: 1px solid #b3e0ff; }
 .status[data-status="Concluído"] { background-color: #d4edda; color: #155724; border: 1px solid #b1dfbb; }
 .status[data-status="Cancelado"] { background-color: #f8d7da; color: #721c24; border: 1px solid #f1b0b7; }
 
-
 .projeto-card ul {
     padding-left: 0;
     list-style-type: none;
-    flex-grow: 1; 
+    flex-grow: 1;
     margin: 0 0 20px 0;
 }
-
 .projeto-card li {
     display: flex;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
     padding: 12px 5px;
-    border-bottom: 1px solid #f1f3f5; 
+    border-bottom: 1px solid #f1f3f5;
 }
 .projeto-card li:last-child { border-bottom: none; }
 
-.descricao-atividade {
-    flex-grow: 1;
-    word-break: break-word;
-}
+.descricao-atividade { flex-grow: 1; word-break: break-word; }
 .descricao-atividade i { font-size: 0.9em; color: #555; }
-
-.controles-atividade {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
+.controles-atividade { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 input[type="text"], select {
-    padding: 12px; 
-    border: 1px solid #ced4da; 
-    border-radius: 8px; 
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
     font-size: 1em;
     font-family: inherit;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -164,20 +123,9 @@ input[type="text"]:focus, select:focus {
     border-color: #005a9c;
     box-shadow: 0 0 0 3px rgba(0, 90, 156, 0.15);
 }
-
-.form-status, .form-atividade {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-.form-status select, .form-atividade input {
-    flex-grow: 1;
-}
-
-.form-status-atividade {
-    display: flex;
-    gap: 5px;
-}
+.form-status, .form-atividade { display: flex; gap: 10px; margin-top: 15px; }
+.form-status select, .form-atividade input { flex-grow: 1; }
+.form-status-atividade { display: flex; gap: 5px; }
 .form-status-atividade select { padding: 6px; font-size: 0.9em; border-radius: 6px; }
 
 button {
@@ -190,36 +138,30 @@ button {
     font-family: inherit;
     transition: all 0.2s ease;
 }
-button:hover {
-    filter: brightness(0.92); 
+button:hover { filter: brightness(0.92); }
+button:active { transform: translateY(1px); }
+
+.container-cadastro button { background-color: #007bff; color: white; padding: 12px 20px; }
+.form-status button { background-color: #ffc107; color: #333; }
+.form-atividade button { background-color: #28a745; color: white; }
+.form-status-atividade button { background-color: #6c757d; color: white; padding: 6px 10px; }
+
+.btn-excluir { background-color: #f1f3f5; color: #dc3545; border: 1px solid #f1f3f5; font-weight: bold; }
+.btn-excluir:hover { background-color: #dc3545; color: white; border-color: #dc3545; }
+.controles-atividade .btn-excluir { padding: 6px 12px; font-size: 0.9em; }
+.btn-excluir-projeto { padding: 5px 12px; font-size: 1.1em; flex-shrink: 0; }
+
+.card-arquivado {
+    opacity: 0.8; 
+    background-color: #fdfdfd; 
 }
-button:active {
-    transform: translateY(1px); 
+.card-arquivado:hover {
+    transform: translateY(0);
+    opacity: 0.9;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); 
 }
 
-.container-cadastro button { background-color: #007bff; color: white; padding: 12px 20px; } 
-.form-status button { background-color: #ffc107; color: #333; } 
-.form-atividade button { background-color: #28a745; color: white; } 
-.form-status-atividade button { background-color: #6c757d; color: white; padding: 6px 10px; } 
-
-.btn-excluir {
-    background-color: #f1f3f5;
-    color: #dc3545;
-    border: 1px solid #f1f3f5;
-    font-weight: bold;
-}
-.btn-excluir:hover {
-    background-color: #dc3545;
-    color: white; 
-    border-color: #dc3545;
-}
-
-.controles-atividade .btn-excluir {
-    padding: 6px 12px;
-    font-size: 0.9em;
-}
-.btn-excluir-projeto {
-    padding: 5px 12px;
-    font-size: 1.1em;
-    flex-shrink: 0;
+.lista-atividades-arquivadas li {
+    justify-content: flex-start; 
+    color: #555;
 }

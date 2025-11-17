@@ -3,13 +3,13 @@ $dbFile = __DIR__ . '/peti.db';
 
 try {
     $db = new PDO('sqlite:' . $dbFile);
-
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $sqlProjetos = "
     CREATE TABLE IF NOT EXISTS projetos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
+        descricao TEXT,
         status TEXT DEFAULT 'Planejado' 
              CHECK(status IN ('Planejado', 'Em Andamento', 'Concluído', 'Cancelado'))
     );";
@@ -17,7 +17,8 @@ try {
     $sqlAtividades = "
     CREATE TABLE IF NOT EXISTS atividades (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        descricao TEXT NOT NULL,
+        titulo TEXT NOT NULL,
+        descricao TEXT,
         status TEXT DEFAULT 'Em Andamento' 
              CHECK(status IN ('Em Andamento', 'Concluído', 'Cancelado')),
         projeto_id INTEGER,
@@ -28,5 +29,5 @@ try {
     $db->exec($sqlAtividades);
 
 } catch (PDOException $e) {
-    die("Erro ao conectar ou configurar o banco de dados: " . $e->getMessage());
+    die("Erro ao conectar: " . $e->getMessage());
 }
